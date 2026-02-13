@@ -3,6 +3,7 @@ Ollama Python library docs: https://github.com/ollama/ollama-python
 Ollama API documentation: https://github.com/ollama/ollama/blob/main/docs/api.md
 https://docs.ollama.com/
 https://docs.ollama.com/api#generate-embeddings
+VectorDatabase for embedding https://docs.trychroma.com/docs/overview/getting-started
 
 """
 import sys
