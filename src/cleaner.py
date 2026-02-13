@@ -5,6 +5,8 @@ import json
 import re
 import html2text
 
+# Assisted by gemini for cleaner troubleshooting and junk selector identification
+
 junk_selectors = [
     '#mw-navigation', '#footer', '#p-personal', '#p-cactions', 
     '.printfooter', '.catlinks', '#p-search', '.mw-editsection',

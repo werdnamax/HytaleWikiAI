@@ -2,6 +2,8 @@ import re
 import json
 from cleaner import genSemantics
 
+# Assisted by gemini for Rcharsplit algorithm
+
 genSemantics()
 
 with open('data/semantics/cleaned_content.json', 'r') as f:
