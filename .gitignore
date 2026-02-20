@@ -1,3 +1,4 @@
 # output folder becuase it might contain large files and sensitive data
 output/
 .venv/
+.env/
