@@ -1,23 +1,44 @@
 from qdrant_client import QdrantClient, models
 import json
+from vectorEmbedding import get_embedding
 
+# process and upload tweaked by gemini
+
+# --- CONFIGURATION ---
+QDRANT_URL = "https://43a3aab5-330f-4a32-b9ec-5bb8967cdad6.us-west-2-0.aws.cloud.qdrant.io"
+QDRANT_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.ncm-ibH0do4IO9dbA4AveDnKwxF0Cpg1PiUbqGfVpx0"
+COLLECTION_NAME = "Hytale-Wiki-3"
+VECTOR_SIZE = 768
 
 qdrant_client = QdrantClient(
-    url="https://43a3aab5-330f-4a32-b9ec-5bb8967cdad6.us-west-2-0.aws.cloud.qdrant.io", 
-    api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.ncm-ibH0do4IO9dbA4AveDnKwxF0Cpg1PiUbqGfVpx0",
+    url=QDRANT_URL, 
+    api_key=QDRANT_API_KEY,
 )
 
-print(qdrant_client.get_collections())
+def create_collection():
+    try:
+        qdrant_client.create_collection(    
+            collection_name=COLLECTION_NAME,
+            vectors_config=models.VectorParams(
+                size=VECTOR_SIZE,
+                distance=models.Distance.COSINE
+            ),
+        )
+    except Exception as e:
+        print(f"Error creating collection: {e}")
 
-def get_embedding(text, model="MODEL_HERE"):
-    """Isolates Ollama: just give it text, get back a list of numbers."""
-    response = ollama.embeddings(model=model, prompt=text)
-    return response['embedding']
 
-with open("data/semantics/cleaned_content.json", 'r') as f:
-    data = json.load(f)
+def setup_collection():
+    print(f"Recreating collection: {COLLECTION_NAME}")
+    qdrant_client.recreate_collection(
+        collection_name=COLLECTION_NAME,
+        vectors_config=models.VectorParams(
+            size=VECTOR_SIZE,
+            distance=models.Distance.COSINE
+        ),
+    )
 
-def upload(client, col_name, vector, metadata):
+def upload_point(col_name, vector, metadata):
     qdrant_client.upsert(
         collection_name=col_name,
         points=[
@@ -29,33 +50,29 @@ def upload(client, col_name, vector, metadata):
         ]
     )
 
-def get_embeddings(text):
+def process_and_upload():
+    """Reads cleaned content, generates embeddings, and uploads to Qdrant."""
+    with open("data/semantics/cleaned_content.json", 'r') as f:
+        data = json.load(f)
+
+    print(f"Found {len(data)} items to process.")
     
+    for i, item in enumerate(data):
+        title = item.get("url", "").split('/')[-1].replace('-', ' ')
+        text_content = item.get("content", "")
+        
+        if not text_content:
+            continue
 
-for i, item in enumerate(data):
-    title = item.get("url").split('/')[-1].replace('-', ' ')
+        print(f"[{i+1}/{len(data)}] Generating embedding for: {title}")
+        vector = get_embedding(text_content)
+        
+        if vector:
+            meta = {'id': i, 'title': title, 'content': text_content, 'url': item.get("url")}
+            upload_point(COLLECTION_NAME, vector, meta)
+        else:
+            print(f"Skipping {title} due to embedding error.")
 
-    text_content = item.get("content")
-    vector = get_embeddings(text_content)
-    
-    meta = {'id' : i, 'title' : title, 'content' : text_content}
-    upload(qdrant_client, "Hytale-Wiki-3", vector, meta)
-  
-
-qdrant_client.recreate_collection(
-    collection_name="Hytale-Wiki-3",
-    vectors_config=models.VectorParams(
-        size=768,  # Change this to match your specific model!
-        distance=models.Distance.COSINE
-    ),
-)
-
-
-# 3. Prepare and Upload your data
-# Qdrant's upload_collection is the easiest way to batch upload
-qdrant_client.upload_collection(
-    collection_name="Hytale-Wiki-3",
-    vectors=None, # If you want Qdrant to handle embedding, or pass your list of vectors here
-    payload=[{"title": name, "content": content} for name, content in zip(names, params)],
-    ids=None # Automatically generates IDs if None
-)
+if __name__ == "__main__":
+    # 1. Initialize collection (Optional: comment out if you want to persist data)
+    create_collection()

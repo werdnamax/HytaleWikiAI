@@ -3,3 +3,4 @@ requests>=2.32.3
 transformers==4.31.0
 html2text==2025.4.15
 qdrant_client==1.17.0
+ollama==0.6.1
