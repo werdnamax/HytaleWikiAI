@@ -3,12 +3,18 @@ name = "hytalewikiai"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
+    "beautifulsoup4==4.14.3",
+    "bs4>=0.0.2",
+    "chromadb>=1.5.0",
+    "cosine-similarity>=0.1.2",
     "dotenv>=0.9.9",
+    "html2text==2025.4.15",
     "np>=1.0.2",
     "numpy>=2.2.6",
     "ollama>=0.6.1",
     "qdrant-client>=1.17.0",
     "requests>=2.32.5",
+    "transformers>=4.36.0",
 ]
