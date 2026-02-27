@@ -11,13 +11,28 @@ from vectorEmbedding import get_embedding
 # retrieval the relevant content (using similarity search) from the vector database and use it to answer the question.
 
 def retrieve_relevant_content(query):
+    # Load environment variables
+    load_dotenv()
+    QDRANT_HOST = os.getenv('QDRANT_HOST')
+    QDRANT_PORT = int(os.getenv('QDRANT_PORT'))
+    QDRANT_COLLECTION = os.getenv('QDRANT_COLLECTION')
+
     # Initialize Qdrant client
-    qdrant_client = QdrantClient(url=os.getenv('QDRANT_URL'), api_key=os.getenv('QDRANT_API_KEY'))
+    client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 
     # use cosine similarity to find the most relevant content in the vector database
-    query_embedding = get_embedding(query)
-    response = qdrant_client.search(
-        collection_name=os.getenv('COLLECTION_NAME'),
+    try:
+        query_embedding = get_embedding(query)
+    except Exception as e:
+        raise ValueError(
+            "Failed to generate embedding for query. Possible causes include "
+            "API/connectivity issues with the embedding service, an invalid query "
+            "format or type, or misconfigured environment/model settings. "
+            f"Original error: {e}"
+        )
+
+    response = client.search(
+        collection_name=QDRANT_COLLECTION,
         query_vector=query_embedding,
         limit=5,
         with_payload=True
