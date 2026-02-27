@@ -1,14 +1,18 @@
 from qdrant_client import QdrantClient, models
 import json
 from vectorEmbedding import get_embedding
+from dotenv import load_dotenv
+import os
 
 # process and upload tweaked by gemini
 
 # --- CONFIGURATION ---
-QDRANT_URL = "https://43a3aab5-330f-4a32-b9ec-5bb8967cdad6.us-west-2-0.aws.cloud.qdrant.io"
-QDRANT_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.ncm-ibH0do4IO9dbA4AveDnKwxF0Cpg1PiUbqGfVpx0"
-COLLECTION_NAME = "Hytale-Wiki-3"
-VECTOR_SIZE = 768
+load_dotenv(".env")
+
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
+VECTOR_SIZE = int(os.getenv("VECTOR_SIZE"))
 
 qdrant_client = QdrantClient(
     url=QDRANT_URL, 
