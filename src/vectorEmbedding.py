@@ -1,23 +1,21 @@
-## use ollama to create vector embeddings and store them in qdrant.
-import os
-from dotenv import load_dotenv
-from qdrant_client import QdrantClient
 import ollama
 
+client = ollama.Client(host='http://ollama.cs.wallawalla.edu:11434')
+_model = 'nomic-embed-text'
 
-def create_embeddings(text):
-  # Use Ollama to create vector embeddings for the given text
-  response = ollama.embed(text)
-  return response['embedding']
+def get_embedding(text):
+    """
+    Generates a vector embedding for the given text using Ollama.
+    Defaults to 'nomic-embed-text' which is a common choice for RAG.
+    """
+    try:
+        response = client.embed(model=_model, input=text)
+        return response.embeddings[0]
+    except Exception as e:
+        print(f"Error generating embedding: {e}")
+        return None
 
-def store_embeddings_in_qdrant(embeddings, metadata):
-  # Initialize Qdrant client
-  qdrant_client = QdrantClient(url=os.getenv('QDRANT_URL'), api_key=os.getenv('QDRANT_API_KEY'))
-  
-  # Store embeddings in Qdrant with associated metadata
-  for embedding, meta in zip(embeddings, metadata):
-      qdrant_client.upsert(collection_name='hytale_wiki', points=[{
-          'id': meta['id'],
-          'vector': embedding,
-          'payload': meta
-      }])
+
+if __name__ == "__main__":
+    print(get_embedding("Hello World"))
+    print("Done!")
