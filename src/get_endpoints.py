@@ -68,3 +68,8 @@ def genLayer3():
 
     with open('data/endpoints/scraper_output_layer3.json', 'w') as f:
         json.dump(layer3, f, indent=4)
+
+def genEnd():
+    genLayer2()
+    genLayer3()
+
