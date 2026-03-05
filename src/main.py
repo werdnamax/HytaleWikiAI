@@ -1,6 +1,7 @@
 from get_endpoints import genEnd
 from cleaner import genSemantics
 from qdrant import process_and_upload
+from chunker import genChunks
 
 #1
 # genEnd()
@@ -9,4 +10,7 @@ from qdrant import process_and_upload
 # genSemantics()
 
 #3
-# process_and_upload()
+# genChunks()
+
+#4
+process_and_upload()

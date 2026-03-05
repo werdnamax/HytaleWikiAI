@@ -3,16 +3,11 @@ import json
 from cleaner import genSemantics
 
 # Assisted by gemini for Rcharsplit algorithm
-
-genSemantics()
-
-with open('data/semantics/cleaned_content.json', 'r') as f:
-    content = json.load(f)
-
 max_chunk_size = 2048
 overlap = 512
 
 i = 0
+
 def Rcharsplit(text, patterns = ['\n\n', '\n', ' ', '']):
     if len(text) <= max_chunk_size:
         return [text]
@@ -47,6 +42,8 @@ def Rcharsplit(text, patterns = ['\n\n', '\n', ' ', '']):
 
         
 def genChunks():
+    with open('data/semantics/cleaned_content.json', 'r') as f:
+        content = json.load(f)
     links = []
     for item in content:
         block = {
@@ -59,4 +56,3 @@ def genChunks():
     with open('data/chunks/chunks.json', 'w') as f:
         json.dump(links, f, indent=4)
     
-genChunks()
