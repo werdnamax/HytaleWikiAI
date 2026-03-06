@@ -13,7 +13,6 @@ COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 VECTOR_SIZE = int(os.getenv("VECTOR_SIZE"))
 
 _client = ollama.Client(host='http://ollama.cs.wallawalla.edu:11434')
-_user_prompt = "What are the different types of weapons in hytale?"
 
 _qdrant_client = QdrantClient(
     url=QDRANT_URL, 
@@ -53,4 +52,7 @@ def rag(user_prompt, model='deepseek-r1:latest', top_k=3, temp=1.0):
 
     return clean_answer
 
-print(rag(_user_prompt, top_k=5))
+
+if __name__ == "__main__":
+    _user_prompt = "What are the different types of weapons in hytale?"
+    print(rag(_user_prompt, top_k=5))
