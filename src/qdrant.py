@@ -56,14 +56,14 @@ def upload_point(col_name, vector, metadata):
 
 def process_and_upload():
     """Reads cleaned content, generates embeddings, and uploads to Qdrant."""
-    with open("data/semantics/cleaned_content.json", 'r') as f:
+    with open("data/chunks/chunks.json", 'r') as f:
         data = json.load(f)
 
     print(f"Found {len(data)} items to process.")
     
     for i, item in enumerate(data):
-        title = item.get("url", "").split('/')[-1].replace('-', ' ')
-        text_content = item.get("content", "")
+        title = item.get("title", "").split('?')[-1]
+        text_content = item.get("text", "")
         
         if not text_content:
             continue
