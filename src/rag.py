@@ -30,7 +30,7 @@ def get_topK(prompt, k):
     return response
     
 def rag(user_prompt, model='deepseek-r1:latest', top_k=3, temp=1.0):
-    model_prompt = f"""You are a helpful assistant. Answer the question using ONLY the context provided below. 
+    model_prompt = f"""You are a helpful assistant for the Hytale wiki. Answer the question using ONLY the context provided below related to Hytale. 
         If the answer isn't in the context, say you don't know.
 
         Context: {get_topK(user_prompt, top_k)}
